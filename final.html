@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusCupid - College Dating Portal</title>
+  
+  <style>
+    :root {
+      --primary-pink: #ff4d88;
+      --deep-rose: #e6005c;
+      --soft-pink: #fff0f5;
+      --blush-accent: #ffe4e9;
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --glass-border: rgba(255, 182, 193, 0.5);
+      --text-main: #3a1523;
+      --text-muted: #7d4e5d;
+      --shadow-romantic: 0 15px 35px rgba(255, 77, 136, 0.22);
+      --radius-lg: 24px;
+      --radius-sm: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ffeef2 0%, #ffd6e0 50%, #fcd5ce 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text-main);
+      overflow-x: hidden;
+      position: relative;
+      padding: 16px;
+    }
+
+    /* Ambient Floating Hearts */
+    .hearts-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .heart-particle {
+      position: absolute;
+      bottom: -40px;
+      color: rgba(255, 105, 180, 0.35);
+      font-size: 20px;
+      animation: floatUpward linear infinite;
+      user-select: none;
+    }
+
+    @keyframes floatUpward {
+      0% {
+        transform: translateY(0) rotate(0deg) scale(0.8);
+        opacity: 0;
+      }
+      20% {
+        opacity: 0.8;
+      }
+      80% {
+        opacity: 0.6;
+      }
+      100% {
+        transform: translateY(-110vh) rotate(360deg) scale(1.3);
+        opacity: 0;
+      }
+    }
+
+    .app-viewport {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 440px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-romantic);
+      overflow: hidden;
+      min-height: 640px;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Header Bar */
+    .app-header {
+      background: linear-gradient(135deg, #ff4081, #ff758c);
+      padding: 18px 20px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 15px rgba(255, 64, 129, 0.25);
+    }
+
+    .app-header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-campus {
+      font-size: 0.72rem;
+      background: rgba(255, 255, 255, 0.28);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    /* Screen Views */
+    .view-screen {
+      display: none;
+      padding: 24px 22px;
+      flex: 1;
+      flex-direction: column;
+      animation: fadeInSlide 0.45s ease forwards;
+    }
+
+    .view-screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeInSlide {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Common Typography and Inputs */
+    .screen-title {
+      font-size: 1.45rem;
+      color: var(--deep-rose);
+      font-weight: 800;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .screen-subtitle {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 22px;
+      line-height: 1.4;
+    }
+
+    .input-group {
+      margin-bottom: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-group label {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .input-field, .select-field {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid #ffccd8;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      background: #fff;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-field:focus, .select-field:focus {
+      border-color: var(--primary-pink);
+      box-shadow: 0 0 0 3px rgba(255, 77, 136, 0.2);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ff4081 0%, #ff1493 100%);
+      color: #fff;
+      box-shadow: 0 6px 16px rgba(255, 20, 147, 0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 20, 147, 0.45);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: var(--blush-accent);
+      color: var(--deep-rose);
+    }
+
+    .btn-secondary:hover {
+      background: #ffccd8;
+    }
+
+    /* PIN Screen Specifics */
+    .pin-box-wrapper {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 20px 0 25px;
+    }
+
+    .pin-digit {
+      width: 52px;
+      height: 58px;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      border-radius: 12px;
+      border: 2px solid #ffb6c1;
+      background: #fff;
+      outline: none;
+    }
+
+    .pin-digit:focus {
+      border-color: var(--deep-rose);
+      box-shadow: 0 0 10px rgba(255, 20, 147, 0.3);
+    }
+
+    .pin-hint {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: -10px;
+      margin-bottom: 20px;
+    }
+
+    /* Rejection / Middle Finger Modal */
+    .rejection-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.97);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      z-index: 100;
+      text-align: center;
+      animation: shakeHoriz 0.4s ease-in-out;
+    }
+
+    .rejection-overlay.active {
+      display: flex;
+    }
+
+    @keyframes shakeHoriz {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-12px); }
+      40%, 80% { transform: translateX(12px); }
+    }
+
+    .middle-finger-icon {
+      font-size: 80px;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15));
+      animation: bounceMiddle 0.6s infinite alternate ease-in-out;
+    }
+
+    @keyframes bounceMiddle {
+      from { transform: translateY(0) scale(1); }
+      to { transform: translateY(-10px) scale(1.08); }
+    }
+
+    .rejection-text {
+      color: #d81159;
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .romantic-banner {
+      background: linear-gradient(135deg, #ff758c, #ff7eb3);
+      color: white;
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin: 15px 0;
+      box-shadow: 0 4px 15px rgba(255, 117, 140, 0.4);
+      display: none;
+      animation: pulseGlow 1.5s infinite alternate;
+    }
+
+    .romantic-banner.show {
+      display: block;
+    }
+
+    @keyframes pulseGlow {
+      from { transform: scale(0.99); box-shadow: 0 0 10px rgba(255, 64, 129, 0.4); }
+      to { transform: scale(1.02); box-shadow: 0 0 20px rgba(255, 64, 129, 0.8); }
+    }
+
+    /* Option Pill Selectors */
+    .pill-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .pill-card {
+      border: 2px solid #ffd1dc;
+      padding: 12px;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      background: #fff;
+      transition: all 0.2s;
+    }
+
+    .pill-card.selected {
+      border-color: var(--deep-rose);
+      background: var(--blush-accent);
+      color: var(--deep-rose);
+      box-shadow: 0 4px 10px rgba(230, 0, 92, 0.15);
+    }
+
+    /* Match Profile Showcase */
+    .match-profile-card {
+      background: white;
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      border: 1.5px solid #ffc2d1;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 12px rgba(255, 105, 180, 0.12);
+    }
+
+    .match-avatar {
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff4081, #ff9a9e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #fff;
+      box-shadow: 0 3px 10px rgba(255, 64, 129, 0.3);
+    }
+
+    .match-info h4 {
+      font-size: 1.1rem;
+      color: var(--text-main);
+    }
+
+    .match-info p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Classroom & Lecture Visualizer */
+    .lecture-benches {
+      background: #fff8fa;
+      border: 1.5px dashed #ffa5ba;
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      text-align: center;
+      margin: 12px 0 20px;
+    }
+
+    .bench-display {
+      font-size: 2.2rem;
+      margin: 8px 0;
+    }
+
+    .bench-tagline {
+      font-size: 0.85rem;
+      color: var(--deep-rose);
+      font-weight: 600;
+    }
+
+    .chatroom-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      flex: 1;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #ffd6e0;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    .chat-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: #2e7d32;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #2e7d32;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #4caf50;
+    }
+
+    .chat-messages {
+      flex: 1;
+      height: 290px;
+      max-height: 320px;
+      overflow-y: auto;
+      padding-right: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      scroll-behavior: smooth;
+    }
+
+    .chat-messages::-webkit-scrollbar {
+      width: 4px;
+    }
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: #ffb6c1;
+      border-radius: 4px;
+    }
+
+    .msg-bubble {
+      max-width: 80%;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      line-height: 1.35;
+      border-radius: 16px;
+      position: relative;
+      animation: popMessage 0.25s ease-out;
+      word-break: break-word;
+    }
+
+    @keyframes popMessage {
+      from { opacity: 0; transform: scale(0.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .msg-received {
+      align-self: flex-start;
+      background: #ffe3ec;
+      color: #4a1525;
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg-sent {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #ff4081, #ff1493);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 2px 8px rgba(255, 64, 129, 0.2);
+    }
+
+    .msg-time {
+      font-size: 0.65rem;
+      opacity: 0.7;
+      margin-top: 4px;
+      display: block;
+      text-align: right;
+    }
+
+    .chat-input-bar {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      position: relative;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 12px 14px;
+      border-radius: 25px;
+      border: 1.5px solid #ffccd8;
+      outline: none;
+      font-size: 0.9rem;
+    }
+
+    .chat-send-btn {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #ff4081, #ff1493);
+      border: none;
+      color: white;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(255, 20, 147, 0.3);
+    }
+
+    .emoji-row {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 8px;
+      font-size: 1.25rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .emoji-row span {
+      transition: transform 0.2s;
+    }
+    .emoji-row span:hover {
+      transform: scale(1.3);
+    }
+
+    /* Modal dialog for date satisfaction/reassurance */
+    .dialog-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 80;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .dialog-overlay.active {
+      display: flex;
+    }
+
+    .dialog-box {
+      background: white;
+      padding: 24px;
+      border-radius: var(--radius-lg);
+      text-align: center;
+      width: 100%;
+      max-width: 320px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .dialog-box h3 {
+      font-size: 1.2rem;
+      color: var(--deep-rose);
+      margin-bottom: 12px;
+    }
+
+    .dialog-box p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .dialog-actions {
+      display: flex;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Floating Hearts -->
+  <div class="hearts-background" id="heartsContainer"></div>
+
+  <div class="app-viewport">
+    <!-- Header -->
+    <header class="app-header">
+      <h1><span>💖</span> CampusCupid</h1>
+      <span class="badge-campus">IITGN / College Portal</span>
+    </header>
+
+    <!-- SCREEN 1: SECURITY PIN VERIFICATION -->
+    <section class="view-screen active" id="screenPin">
+      <h2 class="screen-title">Campus Love Passcode</h2>
+      <p class="screen-subtitle">Enter your 4-digit college love PIN to synchronize your future connection.</p>
+      
+      <div class="pin-box-wrapper">
+        <input type="password" maxlength="1" class="pin-digit" autofocus data-index="0" inputmode="numeric">
+        <input type="password" maxlength="1" class="pin-digit" data-index="1" inputmode="numeric">
+        <input type="password" maxlength="1" class="pin-digit" data-index="2" inputmode="numeric">
+        <input type="password" maxlength="1" class="pin-digit" data-index="3" inputmode="numeric">
+      </div>
+
+      <p class="pin-hint">💡 Secret College Hint: <strong>1430</strong> (I Love You) or <strong>2026</strong></p>
+
+      <button class="btn btn-primary" id="btnVerifyPin">
+        <span>Unlock Connection</span> ➔
+      </button>
+
+      <!-- Rejection screen overlay for invalid PIN -->
+      <div class="rejection-overlay" id="pinRejectionOverlay">
+        <div class="middle-finger-icon">🖕</div>
+        <h3 class="rejection-text">ACCESS DENIED!</h3>
+        <p style="font-size:0.9rem; color:#666; margin-bottom: 18px;">
+          Wrong PIN! Don't try to hack campus love. Try valid PIN <strong>1430</strong>!
+        </p>
+        <button class="btn btn-secondary" id="btnTryPinAgain">Try Again</button>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: USER PROFILE & GENDER PREFERENCE -->
+    <section class="view-screen" id="screenProfile">
+      <h2 class="screen-title">Who Are You?</h2>
+      <p class="screen-subtitle">Create your college romance tag & choose who you're looking for.</p>
+
+      <div class="input-group">
+        <label for="userNameInput">Your Full Name / Nickname</label>
+        <input type="text" id="userNameInput" class="input-field" placeholder="e.g. Aryan or Ananya" required>
+      </div>
+
+      <div class="input-group">
+        <label>You are seeking for:</label>
+        <div class="pill-grid">
+          <div class="pill-card selected" data-target-gender="Girl">👧 A Girl in College</div>
+          <div class="pill-card" data-target-gender="Boy">👦 A Boy in College</div>
+        </div>
+      </div>
+
+      <!-- Crush mode vs Random match -->
+      <div class="input-group">
+        <label>Crush Match Strategy:</label>
+        <div class="pill-grid">
+          <div class="pill-card selected" id="optCrushMode" data-mode="specific">
+            💘 I have a specific crush
+          </div>
+          <div class="pill-card" id="optOpenMode" data-mode="random">
+            ✨ Make new GF/BF
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group" id="crushNameContainer">
+        <label for="crushNameInput">Enter your crush's name in college:</label>
+        <input type="text" id="crushNameInput" class="input-field" placeholder="e.g. Riya, Rohan, Sneha...">
+      </div>
+
+      <div class="romantic-banner" id="crushWaitingBanner">
+        "Koi aapka intzaar kar raha hai ❤️️"
+      </div>
+
+      <button class="btn btn-primary" id="btnFindMatch" style="margin-top: 10px;">
+        <span>Find College Partner</span> 💌
+      </button>
+    </section>
+
+    <!-- SCREEN 3: MATCH CONNECT & LECTURE SELECTION -->
+    <section class="view-screen" id="screenMatch">
+      <h2 class="screen-title">It's a Match! 🎉</h2>
+      <p class="screen-subtitle">You are connected with another student on campus.</p>
+
+      <div class="match-profile-card">
+        <div class="match-avatar" id="partnerAvatar">👩</div>
+        <div class="match-info">
+          <h4 id="partnerName">Riya Sharma</h4>
+          <p id="partnerMeta">B.Tech Batch '26 • Academic Block 4</p>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Do you both want to attend a college lecture together?</label>
+        <div class="pill-grid">
+          <div class="pill-card selected" id="optLectureYes">📚 Yes, Sit Together</div>
+          <div class="pill-card" id="optLectureNo">🏃 No, Bunk Lecture</div>
+        </div>
+      </div>
+
+      <!-- Specific lecture options -->
+      <div id="lectureSelectorArea">
+        <label style="font-size:0.84rem; font-weight:600;">Choose the lecture to sit side-by-side:</label>
+        <div class="pill-grid" style="grid-template-columns: repeat(3, 1fr); margin-top:8px;" id="lectureGrid">
+          <div class="pill-card selected" data-lecture="IC 101">IC 101</div>
+          <div class="pill-card" data-lecture="IC 102">IC 102</div>
+          <div class="pill-card" data-lecture="IC 104">IC 104</div>
+          <div class="pill-card" data-lecture="IC 105">IC 105</div>
+          <div class="pill-card" data-lecture="PC 1">PC 1</div>
+        </div>
+
+        <div class="lecture-benches">
+          <div class="bench-display">🧑‍🎓 ❤️ 👩‍🎓</div>
+          <div class="bench-tagline" id="benchSummaryText">Reserved Bench in Hall for IC 101</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btnProceedToDate">
+        <span>Plan Romantic Date</span> 📅
+      </button>
+    </section>
+
+    <!-- SCREEN 4: DATE, DESTINATION & FOOD SELECTION -->
+    <section class="view-screen" id="screenDatePlan">
+      <h2 class="screen-title">Plan The Date</h2>
+      <p class="screen-subtitle">Synchronize your calendar, destination, and cravings.</p>
+
+      <div class="input-group">
+        <label for="dateMonthPicker">Select Date & Month for your Date:</label>
+        <input type="date" id="dateMonthPicker" class="input-field" min="2026-01-01">
+      </div>
+
+      <!-- Female preference destination -->
+      <div class="input-group">
+        <label>Date Place (1st Preference: Female User):</label>
+        <select class="select-field" id="selectPlace">
+          <option value="Gandhinagar">1. Gandhinagar (Riverfront & Sabarmati Walks)</option>
+          <option value="Ahmedabad">2. Ahmedabad (Cafes & Heritage Vibes)</option>
+          <option value="Other City">3. Other City (Spontaneous Road Trip)</option>
+        </select>
+      </div>
+
+      <!-- Food cuisine selection -->
+      <div class="input-group">
+        <label>Which Food do you both crave?</label>
+        <select class="select-field" id="selectFood">
+          <option value="Italian">1. ITALIAN (Pasta & Woodfired Pizza)</option>
+          <option value="Mexican">2. MEXICAN (Tacos & Nachos)</option>
+          <option value="Chinese">3. CHINESE (Dumplings & Noodles)</option>
+          <option value="South Indian">4. SOUTH INDIAN (Crispy Dosa & Filter Coffee)</option>
+          <option value="North Indian">5. NORTH INDIAN (Butter Paneer & Kulcha)</option>
+          <option value="Other">6. OTHER (Street Food & Desserts)</option>
+        </select>
+      </div>
+
+      <div class="input-group" style="margin-top: 10px;">
+        <label style="text-align: center; display:block;">Are you satisfied with this date plan?</label>
+        <div class="pill-grid">
+          <div class="pill-card selected" id="optSatisfiedYes">💖 YES, It's Perfect</div>
+          <div class="pill-card" id="optSatisfiedNo">🤔 NO, Adjust Plan</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btnConfirmDate">
+        <span>Unlock Romantic Chatroom</span> 💬
+      </button>
+    </section>
+
+    <!-- SCREEN 5: LOVE THEMED CHATROOM -->
+    <section class="view-screen" id="screenChat">
+      <div class="chatroom-container">
+        <div class="chat-header">
+          <div>
+            <strong id="chatPartnerName">Riya</strong>
+            <div class="chat-status">
+              <span class="status-dot"></span>
+              <span>Online • Sitting on the same bench</span>
+            </div>
+          </div>
+          <button class="btn btn-secondary" id="btnRestartApp" style="width: auto; padding: 6px 12px; font-size: 0.75rem;">
+            New Match
+          </button>
+        </div>
+
+        <div class="chat-messages" id="chatMessageList">
+          <div class="msg-bubble msg-received">
+            Hey! I saw you picked our date and lecture plan! Looking forward to it 🥰
+            <span class="msg-time">Just now</span>
+          </div>
+        </div>
+
+        <div class="emoji-row" id="emojiReactions">
+          <span>❤️</span>
+          <span>🌹</span>
+          <span>😘</span>
+          <span>🍫</span>
+          <span>✨</span>
+        </div>
+
+        <div class="chat-input-bar">
+          <input type="text" id="chatMessageInput" class="chat-input" placeholder="Type romantic message...">
+          <button class="chat-send-btn" id="btnSendChat">💌</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal Dialog for No satisfaction -->
+    <div class="dialog-overlay" id="satisfactionDialog">
+      <div class="dialog-box">
+        <h3>Not Satisfied? 💕</h3>
+        <p>No worries! You can swap between Gandhinagar or Ahmedabad and adjust the food options so your college date is 100% memorable.</p>
+        <button class="btn btn-primary" id="btnReAdjustPlan">Let's Adjust</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* Audio Synthesis using Web Audio API for safe sound without external dependencies */
+    class SoundController {
+      constructor() {
+        this.ctx = null;
+      }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+      playSuccessChime() {
+        this.init();
+        const now = this.ctx.currentTime;
+        const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        freqs.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.12);
+          gain.gain.setValueAtTime(0.001, now + idx * 0.12);
+          gain.gain.exponentialRampToValueAtTime(0.3, now + idx * 0.12 + 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.4);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + idx * 0.12);
+          osc.stop(now + idx * 0.12 + 0.45);
+        });
+      }
+      playBuzzer() {
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.linearRampToValueAtTime(80, now + 0.35);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.36);
+      }
+      playChatPop() {
+        this.init();
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.exponentialRampToValueAtTime(1200, now + 0.08);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.09);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.1);
+      }
+    }
+
+    const sound = new SoundController();
+
+    /* Text to Speech synthesizer */
+    function speakFutureDeviceConnected() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance("YOUR FUTURE DEVICE IS CONNECTED");
+        utterance.rate = 0.95;
+        utterance.pitch = 1.1;
+        const voices = window.speechSynthesis.getVoices();
+        const romanticVoice = voices.find(v => v.lang.includes('en') && (v.name.includes('Female') || v.name.includes('Natural') || v.name.includes('Google')));
+        if (romanticVoice) utterance.voice = romanticVoice;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function initFloatingHearts() {
+      const container = document.getElementById('heartsContainer');
+      const emojis = ['💖', '💕', '🌸', '✨', '💘', '💗', '💝'];
+      setInterval(() => {
+        if (document.hidden) return;
+        const heart = document.createElement('div');
+        heart.className = 'heart-particle';
+        heart.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = (5 + Math.random() * 6) + 's';
+        heart.style.fontSize = (16 + Math.random() * 22) + 'px';
+        container.appendChild(heart);
+        setTimeout(() => heart.remove(), 11000);
+      }, 700);
+    }
+    initFloatingHearts();
+
+    /* App State Management */
+    const state = {
+      validPins: ['1430', '2026', '0000', '1234'],
+      userName: '',
+      targetGender: 'Girl',
+      crushMode: 'specific',
+      crushName: '',
+      matchedPartner: null,
+      attendLecture: true,
+      selectedLecture: 'IC 101',
+      dateMonth: '',
+      datePlace: 'Gandhinagar',
+      foodPreference: 'Italian',
+      isSatisfied: true
+    };
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.view-screen').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(screenId);
+      if (target) {
+        target.classList.add('active');
+      }
+    }
+
+    /* PIN Code Handling */
+    const pinInputs = document.querySelectorAll('.pin-digit');
+    pinInputs.forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        if (e.target.value.length === 1 && index < pinInputs.length - 1) {
+          pinInputs[index + 1].focus();
+        }
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !e.target.value && index > 0) {
+          pinInputs[index - 1].focus();
+        }
+      });
+    });
+
+    document.getElementById('btnVerifyPin').addEventListener('click', handlePinVerification);
+
+    function handlePinVerification() {
+      let enteredPin = '';
+      pinInputs.forEach(i => enteredPin += i.value.trim());
+
+      if (state.validPins.includes(enteredPin)) {
+        sound.playSuccessChime();
+        speakFutureDeviceConnected();
+        setTimeout(() => {
+          showScreen('screenProfile');
+        }, 1100);
+      } else {
+        sound.playBuzzer();
+        document.getElementById('pinRejectionOverlay').classList.add('active');
+      }
+    }
+
+    document.getElementById('btnTryPinAgain').addEventListener('click', () => {
+      document.getElementById('pinRejectionOverlay').classList.remove('active');
+      pinInputs.forEach(i => i.value = '');
+      pinInputs[0].focus();
+    });
+
+    // Gender pill selection
+    document.querySelectorAll('[data-target-gender]').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('[data-target-gender]').forEach(p => p.classList.remove('selected'));
+        pill.classList.add('selected');
+        state.targetGender = pill.dataset.targetGender;
+      });
+    });
+
+    // Crush mode selection
+    const crushContainer = document.getElementById('crushNameContainer');
+    const crushInput = document.getElementById('crushNameInput');
+    const crushBanner = document.getElementById('crushWaitingBanner');
+
+    document.querySelectorAll('[data-mode]').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('[data-mode]').forEach(p => p.classList.remove('selected'));
+        pill.classList.add('selected');
+        state.crushMode = pill.dataset.mode;
+        if (state.crushMode === 'specific') {
+          crushContainer.style.display = 'block';
+        } else {
+          crushContainer.style.display = 'none';
+          crushBanner.classList.remove('show');
+        }
+      });
+    });
+
+    // Simulated college campus active crush database
+    const campusProfiles = [
+      { name: "Riya", gender: "Girl", dept: "Computer Science '26", avatar: "👩🏻‍💼" },
+      { name: "Sneha", gender: "Girl", dept: "Electrical Engg '27", avatar: "👩🏽" },
+      { name: "Ananya", gender: "Girl", dept: "Mechanical Engg '26", avatar: "👩🏼" },
+      { name: "Pooja", gender: "Girl", dept: "Design Dept '25", avatar: "👩🏻" },
+      { name: "Rohan", gender: "Boy", dept: "Civil Engg '26", avatar: "👨🏻" },
+      { name: "Aryan", gender: "Boy", dept: "Data Science '26", avatar: "👨🏽" },
+      { name: "Kabir", gender: "Boy", dept: "Chemical Engg '27", avatar: "👨🏼" },
+      { name: "Aditya", gender: "Boy", dept: "AI & Robotics '25", avatar: "👨🏻‍💻" }
+    ];
+
+    crushInput.addEventListener('input', () => {
+      const val = crushInput.value.trim().toLowerCase();
+      if (val.length >= 2) {
+        // Check if there is an exact or near match
+        const found = campusProfiles.some(p => p.name.toLowerCase().includes(val));
+        if (found) {
+          crushBanner.classList.add('show');
+        } else {
+          crushBanner.classList.remove('show');
+        }
+      } else {
+        crushBanner.classList.remove('show');
+      }
+    });
+
+    document.getElementById('btnFindMatch').addEventListener('click', () => {
+      const name = document.getElementById('userNameInput').value.trim();
+      if (!name) {
+        alertFallback('Please enter your name or campus nickname!');
+        return;
+      }
+      state.userName = name;
+      state.crushName = crushInput.value.trim();
+
+      // Pair partner based on preference
+      let partner = null;
+      if (state.crushMode === 'specific' && state.crushName) {
+        partner = {
+          name: state.crushName,
+          gender: state.targetGender,
+          dept: "Campus Match",
+          avatar: state.targetGender === 'Girl' ? '👧' : '👦'
+        };
+      } else {
+        const available = campusProfiles.filter(p => p.gender === state.targetGender);
+        partner = available[Math.floor(Math.random() * available.length)] || {
+          name: state.targetGender === 'Girl' ? 'Diya' : 'Arjun',
+          gender: state.targetGender,
+          dept: "Tech Block '26",
+          avatar: state.targetGender === 'Girl' ? '👩' : '👨'
+        };
+      }
+
+      state.matchedPartner = partner;
+      document.getElementById('partnerName').innerText = partner.name;
+      document.getElementById('partnerMeta').innerText = `${partner.dept} • Connected for Date`;
+      document.getElementById('partnerAvatar').innerText = partner.avatar;
+      document.getElementById('chatPartnerName').innerText = partner.name;
+
+      showScreen('screenMatch');
+    });
+
+    const optLectureYes = document.getElementById('optLectureYes');
+    const optLectureNo = document.getElementById('optLectureNo');
+    const lectureSelectorArea = document.getElementById('lectureSelectorArea');
+    const benchSummaryText = document.getElementById('benchSummaryText');
+
+    optLectureYes.addEventListener('click', () => {
+      optLectureYes.classList.add('selected');
+      optLectureNo.classList.remove('selected');
+      state.attendLecture = true;
+      lectureSelectorArea.style.display = 'block';
+    });
+
+    optLectureNo.addEventListener('click', () => {
+      optLectureNo.classList.add('selected');
+      optLectureYes.classList.remove('selected');
+      state.attendLecture = false;
+      lectureSelectorArea.style.display = 'none';
+    });
+
+    document.querySelectorAll('#lectureGrid .pill-card').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('#lectureGrid .pill-card').forEach(p => p.classList.remove('selected'));
+        pill.classList.add('selected');
+        state.selectedLecture = pill.dataset.lecture;
+        benchSummaryText.innerText = `Reserved Side-by-side Bench for ${state.selectedLecture}`;
+      });
+    });
+
+    document.getElementById('btnProceedToDate').addEventListener('click', () => {
+      // Set default date to upcoming Saturday
+      const defaultDate = new Date();
+      defaultDate.setDate(defaultDate.getDate() + 3);
+      document.getElementById('dateMonthPicker').value = defaultDate.toISOString().split('T')[0];
+      showScreen('screenDatePlan');
+    });
+
+    const optSatYes = document.getElementById('optSatisfiedYes');
+    const optSatNo = document.getElementById('optSatisfiedNo');
+
+    optSatYes.addEventListener('click', () => {
+      optSatYes.classList.add('selected');
+      optSatNo.classList.remove('selected');
+      state.isSatisfied = true;
+    });
+
+    optSatNo.addEventListener('click', () => {
+      optSatNo.classList.add('selected');
+      optSatYes.classList.remove('selected');
+      state.isSatisfied = false;
+      document.getElementById('satisfactionDialog').classList.add('active');
+    });
+
+    document.getElementById('btnReAdjustPlan').addEventListener('click', () => {
+      document.getElementById('satisfactionDialog').classList.remove('active');
+      optSatYes.classList.add('selected');
+      optSatNo.classList.remove('selected');
+      state.isSatisfied = true;
+    });
+
+    document.getElementById('btnConfirmDate').addEventListener('click', () => {
+      const chosenDate = document.getElementById('dateMonthPicker').value;
+      if (!chosenDate) {
+        alertFallback('Please select the date and month for your romantic outing!');
+        return;
+      }
+      state.dateMonth = chosenDate;
+      state.datePlace = document.getElementById('selectPlace').value;
+      state.foodPreference = document.getElementById('selectFood').value;
+
+      // Romantic notification banner in chatroom
+      const chatMessages = document.getElementById('chatMessageList');
+      chatMessages.innerHTML = `
+        <div class="msg-bubble msg-received">
+          Hey ${escapeHtml(state.userName)}! 😍 I am so glad we matched! 
+          ${state.attendLecture ? `We are sitting together in <strong>${state.selectedLecture}</strong> lecture.` : 'We are bunking the lecture together! 😉'}<br><br>
+          Our date on <strong>${state.dateMonth}</strong> at <strong>${state.datePlace}</strong> for <strong>${state.foodPreference}</strong> cuisine sounds magical! ❤️
+          <span class="msg-time">Just now</span>
+        </div>
+      `;
+
+      showScreen('screenChat');
+    });
+
+    const chatInput = document.getElementById('chatMessageInput');
+    const btnSend = document.getElementById('btnSendChat');
+    const chatContainer = document.getElementById('chatMessageList');
+
+    function appendMessage(text, isSent = true) {
+      sound.playChatPop();
+      const bubble = document.createElement('div');
+      bubble.className = `msg-bubble ${isSent ? 'msg-sent' : 'msg-received'}`;
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      bubble.innerHTML = `${escapeHtml(text)}<span class="msg-time">${time}</span>`;
+      chatContainer.appendChild(bubble);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function handleSendMessage() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+      appendMessage(text, true);
+      chatInput.value = '';
+
+      // Romantic simulated response from partner
+      setTimeout(() => {
+        const cuteResponses = [
+          "Aww, you're so sweet! Can't wait for our date in " + state.datePlace + " 🌹",
+          "Meet me 5 minutes before " + (state.attendLecture ? state.selectedLecture : "college gate") + "!",
+          "I'm counting down the days until our " + state.foodPreference + " food treats! 💖",
+          "You just made my whole college week special! 🥰",
+          "Koi sach me aapka intzaar kar raha tha, and here we are! 💕"
+        ];
+        const randomResp = cuteResponses[Math.floor(Math.random() * cuteResponses.length)];
+        appendMessage(randomResp, false);
+      }, 1100);
+    }
+
+    btnSend.addEventListener('click', handleSendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleSendMessage();
+    });
+
+    // Emoji reaction taps
+    document.querySelectorAll('#emojiReactions span').forEach(span => {
+      span.addEventListener('click', () => {
+        appendMessage(span.innerText, true);
+        setTimeout(() => {
+          appendMessage("🥰 " + span.innerText, false);
+        }, 800);
+      });
+    });
+
+    document.getElementById('btnRestartApp').addEventListener('click', () => {
+      pinInputs.forEach(i => i.value = '');
+      document.getElementById('userNameInput').value = '';
+      document.getElementById('crushNameInput').value = '';
+      showScreen('screenPin');
+      pinInputs[0].focus();
+    });
+
+    /* Safe Helper Utilities */
+    function escapeHtml(string) {
+      const div = document.createElement('div');
+      div.textContent = string;
+      return div.innerHTML;
+    }
+
+    function alertFallback(msg) {
+      const notice = document.createElement('div');
+      notice.style.position = 'fixed';
+      notice.style.bottom = '20px';
+      notice.style.left = '50%';
+      notice.style.transform = 'translateX(-50%)';
+      notice.style.background = '#e6005c';
+      notice.style.color = '#fff';
+      notice.style.padding = '12px 20px';
+      notice.style.borderRadius = '30px';
+      notice.style.boxShadow = '0 6px 20px rgba(0,0,0,0.2)';
+      notice.style.zIndex = '999';
+      notice.style.fontSize = '0.9rem';
+      notice.style.fontWeight = '600';
+      notice.innerText = msg;
+      document.body.appendChild(notice);
+      setTimeout(() => notice.remove(), 2500);
+    }
+  </script>
+</body>
+</html>
